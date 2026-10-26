@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>学术审稿专家 · 智能工作台｜产品方案</title>
+<style>
+:root{
+  --bg:#080b14; --panel:#0f1524; --panel2:#141c2e; --line:#1e2a42;
+  --ink:#e8eefc; --ink2:#9fb0cc; --ink3:#61748f;
+  --cyan:#22d3ee; --violet:#a78bfa; --green:#34d399; --amber:#fbbf24; --rose:#fb7185;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font:14px/1.75 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+  padding:0 0 80px; position:relative; overflow-x:hidden;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:linear-gradient(rgba(34,211,238,.045) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(34,211,238,.045) 1px,transparent 1px);
+  background-size:44px 44px;
+}
+body::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px);
+  opacity:.45;
+}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 30px}
+
+/* ---------- 封面 ---------- */
+header{padding:64px 0 40px;border-bottom:1px solid var(--line);position:relative}
+.kicker{
+  font-size:11px;letter-spacing:.34em;color:var(--cyan);text-transform:uppercase;
+  margin-bottom:16px;font-weight:600;
+}
+h1{font-size:46px;line-height:1.18;letter-spacing:-1.2px;font-weight:700}
+h1 em{
+  font-style:normal;
+  background:linear-gradient(100deg,var(--cyan),var(--violet));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.sub{font-size:16px;color:var(--ink2);margin-top:16px;max-width:760px}
+.meta{display:flex;gap:26px;margin-top:26px;flex-wrap:wrap;font-size:12px;color:var(--ink3)}
+.meta b{color:var(--ink2);font-weight:600}
+
+/* ---------- 结论条 ---------- */
+.verdict{
+  margin:34px 0 0;padding:20px 24px;border-radius:14px;
+  background:linear-gradient(100deg,rgba(34,211,238,.10),rgba(167,139,250,.08));
+  border:1px solid rgba(34,211,238,.30);
+}
+.verdict .t{font-size:12px;letter-spacing:.18em;color:var(--cyan);margin-bottom:8px}
+.verdict p{font-size:16px;color:var(--ink);line-height:1.7}
+
+/* ---------- 章节 ---------- */
+section{padding:52px 0;border-bottom:1px solid var(--line)}
+h2{font-size:13px;letter-spacing:.22em;color:var(--ink3);margin-bottom:8px;font-weight:600}
+h2 span{color:var(--cyan)}
+h3.title{font-size:27px;letter-spacing:-.5px;margin-bottom:24px;font-weight:680}
+.lead{font-size:14.5px;color:var(--ink2);max-width:840px;margin-bottom:26px}
+
+/* ---------- 痛点 ---------- */
+.pains{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pain{
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;
+  position:relative;overflow:hidden;
+}
+.pain::before{content:"";position:absolute;left:0;top:0;width:3px;height:100%;background:var(--rose)}
+.pain .n{font-size:26px;font-weight:700;color:var(--rose);letter-spacing:-1px}
+.pain .u{font-size:11px;color:var(--ink3);margin-top:2px}
+.pain .d{font-size:13px;color:var(--ink2);margin-top:10px;line-height:1.6}
+
+/* ---------- 四步 ---------- */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:8px}
+.step{position:relative;padding:22px 20px 22px 0}
+.step:not(:last-child)::after{
+  content:"";position:absolute;right:14px;top:36px;width:1px;height:52px;
+  background:linear-gradient(180deg,var(--cyan),transparent);
+}
+.step .idx{
+  width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+  background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.38);
+  color:var(--cyan);font-weight:700;font-size:14px;margin-bottom:12px;
+}
+.step h4{font-size:15.5px;margin-bottom:6px;font-weight:650}
+.step p{font-size:12.5px;color:var(--ink2);line-height:1.65}
+.step .out{font-size:11px;color:var(--ink3);margin-top:9px;font-family:ui-monospace,monospace}
+
+/* ---------- 数据表 ---------- */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{
+  text-align:left;font-size:11px;letter-spacing:.1em;color:var(--ink3);
+  padding:9px 12px;border-bottom:1px solid var(--line);font-weight:600;
+}
+td{padding:12px;border-bottom:1px solid rgba(30,42,66,.6);vertical-align:top}
+tr:hover td{background:rgba(34,211,238,.035)}
+td.num{font-variant-numeric:tabular-nums;font-weight:650;color:var(--cyan)}
+.tag{
+  display:inline-block;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:600;
+}
+.tag.ok{background:rgba(52,211,153,.13);color:var(--green);border:1px solid rgba(52,211,153,.3)}
+.tag.warn{background:rgba(251,191,36,.12);color:var(--amber);border:1px solid rgba(251,191,36,.3)}
+.tag.info{background:rgba(167,139,250,.13);color:var(--violet);border:1px solid rgba(167,139,250,.3)}
+
+/* ---------- 壁垒 ---------- */
+.moats{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.moat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.moat .h{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.moat .i{
+  width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-size:13px;
+  background:rgba(167,139,250,.14);border:1px solid rgba(167,139,250,.32);color:var(--violet);
+}
+.moat h4{font-size:14.5px;font-weight:650}
+.moat p{font-size:12.5px;color:var(--ink2);line-height:1.7}
+.moat code{font-size:11.5px;color:var(--cyan);background:rgba(34,211,238,.08);padding:1px 5px;border-radius:4px}
+
+/* ---------- 应用机会 ---------- */
+.ops{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.op{
+  background:linear-gradient(160deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);border-radius:14px;padding:22px;position:relative;
+}
+.op.hot{border-color:rgba(34,211,238,.42);box-shadow:0 0 0 1px rgba(34,211,238,.08),0 12px 40px -20px rgba(34,211,238,.5)}
+.op .badge{
+  position:absolute;top:16px;right:16px;font-size:10px;letter-spacing:.12em;
+  padding:3px 9px;border-radius:20px;background:rgba(34,211,238,.15);
+  color:var(--cyan);border:1px solid rgba(34,211,238,.35);font-weight:700;
+}
+.op h4{font-size:17px;margin-bottom:10px;font-weight:680}
+.op .row{display:flex;gap:18px;margin:12px 0;padding:12px 0;border-top:1px solid rgba(30,42,66,.7);border-bottom:1px solid rgba(30,42,66,.7)}
+.op .row div{flex:1}
+.op .row .k{font-size:10.5px;color:var(--ink3);letter-spacing:.08em;margin-bottom:3px}
+.op .row .v{font-size:14px;font-weight:650;color:var(--ink)}
+.op .row .v.cy{color:var(--cyan)}
+.op p{font-size:12.5px;color:var(--ink2);line-height:1.7}
+.op .fit{font-size:11.5px;color:var(--green);margin-top:10px}
+
+/* ---------- 路径 ---------- */
+.road{display:flex;gap:0;margin-top:8px}
+.phase{flex:1;padding:0 22px 0 0;position:relative}
+.phase:not(:last-child)::after{
+  content:"→";position:absolute;right:6px;top:2px;color:var(--ink3);font-size:16px;
+}
+.phase .p{
+  display:inline-block;font-size:10.5px;letter-spacing:.14em;padding:3px 9px;border-radius:20px;
+  margin-bottom:10px;font-weight:700;
+}
+.phase .p.done{background:rgba(52,211,153,.14);color:var(--green);border:1px solid rgba(52,211,153,.32)}
+.phase .p.next{background:rgba(34,211,238,.12);color:var(--cyan);border:1px solid rgba(34,211,238,.3)}
+.phase .p.later{background:rgba(97,116,143,.14);color:var(--ink3);border:1px solid var(--line)}
+.phase h4{font-size:15px;margin-bottom:7px}
+.phase p{font-size:12.5px;color:var(--ink2);line-height:1.65}
+
+/* ---------- 边界 ---------- */
+.guards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.guard{display:flex;gap:11px;padding:15px 17px;background:var(--panel);border:1px solid var(--line);border-radius:11px}
+.guard .i{color:var(--amber);font-size:15px;line-height:1.4}
+.guard div b{display:block;font-size:13.5px;margin-bottom:4px}
+.guard div span{font-size:12.5px;color:var(--ink2);line-height:1.6}
+
+/* ---------- 状态 ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.col{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.col h4{font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.col ul{list-style:none;font-size:12.5px;color:var(--ink2)}
+.col li{padding:6px 0 6px 20px;position:relative;line-height:1.6}
+.col li::before{content:"▸";position:absolute;left:2px;color:var(--cyan)}
+.col.dim li::before{content:"▹";color:var(--ink3)}
+
+footer{padding:44px 0 0;font-size:11.5px;color:var(--ink3);text-align:center}
+
+@media print{
+  body{background:#fff;color:#111}
+  body::before,body::after{display:none}
+  .wrap{max-width:none}
+  section{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">PRODUCT PROPOSAL · 2026</div>
+  <h1>学术审稿专家 · <em>智能工作台</em></h1>
+  <p class="sub">把审稿人从「翻参考文献、核题录、比数据」里解放出来，专注在他真正不可替代的那件事上 —— 判断。</p>
+  <div class="meta">
+    <div>形态：<b>本地部署 · 单机可跑</b></div>
+    <div>状态：<b>四步流程已实测跑通</b></div>
+    <div>技术栈：<b>Python 标准库 + browser-act + 双大模型</b></div>
+  </div>
+
+  <div class="verdict">
+    <div class="t">核心结论</div>
+    <p>这套工具不是「用 AI 替代审稿人」，而是把审稿中最耗时、最机械、最容易漏的那一段 —— <b>从作者自己的参考文献里抽样、抓摘要、建本篇知识库、再逐条和稿件对标</b> —— 自动化，然后把结果交给人工判断。实测已能做到：抽 10 篇文献、拿到 10 篇摘要、44 秒出初审、60 秒出复审，全部可追溯。</p>
+  </div>
+</header>
+
+<!-- ========== 一、痛点 ========== -->
+<section>
+  <h2>01 <span>／</span> 要解决的问题</h2>
+  <h3 class="title">审稿的瓶颈不在判断，在准备</h3>
+  <p class="lead">一位专家审一篇博士学位论文，真正用于「判断」的时间往往不到三分之一，其余都花在读、查、核对上。</p>
+
+  <div class="pains">
+    <div class="pain">
+      <div class="n">2–3 天</div><div class="u">审一篇博士论文的周期</div>
+      <div class="d">200 多页正文加 259 条参考文献，逐条核对出处、年份、期刊，靠人眼几乎不可能做全。</div>
+    </div>
+    <div class="pain">
+      <div class="n">259 条</div><div class="u">单篇论文的参考文献量</div>
+      <div class="d">人工核验时通常只抽查十几条，剩下的默认「应该没错」，这正是引用问题最容易漏掉的地方。</div>
+    </div>
+    <div class="pain">
+      <div class="n">0 份</div><div class="u">审稿经验的沉淀</div>
+      <div class="d">审完就结束，下一篇换个人从零开始。同类稿件的共性问题无法累积成可复用的判断依据。</div>
+    </div>
+    <div class="pain">
+      <div class="n">新人</div><div class="u">上手门槛高</div>
+      <div class="d">判断标准在资深审稿人脑子里，没有结构化载体，新人只能靠带、靠悟、靠时间。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 二、产品 ========== -->
+<section>
+  <h2>02 <span>／</span> 产品形态</h2>
+  <h3 class="title">四步闭环，每一步都留下可追溯的产物</h3>
+  <p class="lead">不追求「一键出终稿」。学术审稿有合规要求，中间产物必须能单独交付、单独复核，所以流程被切成四步，每一步都落盘。</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="idx">1</div>
+      <h4>准备稿件</h4>
+      <p>上传原稿，确定文章类别。类别决定知识归到哪个领域，同一类别会持续累积经验。</p>
+      <div class="out">→ meta.json · 00_manuscript/</div>
+    </div>
+    <div class="step">
+      <div class="idx">2</div>
+      <h4>抽参考文献建库</h4>
+      <p>从作者的参考文献里随机抽 N 篇，抓取摘要，构成这篇稿件的专属知识库。篇数可调。</p>
+      <div class="out">→ 01_refs/ · 02_abstracts/kb.md</div>
+    </div>
+    <div class="step">
+      <div class="idx">3</div>
+      <h4>读库出意见</h4>
+      <p>模型先读完知识库里的文献摘要，再结合稿件正文给初审意见，每条问题都要能回指原文。</p>
+      <div class="out">→ 03_review/review.md</div>
+    </div>
+    <div class="step">
+      <div class="idx">4</div>
+      <h4>复审与沉淀</h4>
+      <p>第二个模型独立复审初审意见，判断是否成立、有无漏判，再把总结沉淀进领域经验库。</p>
+      <div class="out">→ second-review.md · experience.md</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 三、实测 ========== -->
+<section>
+  <h2>03 <span>／</span> 已跑通的实测数据</h2>
+  <h3 class="title">不是设想，是已经在真实稿件上跑出来的</h3>
+  <p class="lead">下列数字全部来自真实稿件：一篇 31 MB 的博士学位论文（206 页 / 259 条参考文献），以及一篇英文金融计量论文（37 条参考文献）。</p>
+
+  <table>
+    <thead>
+      <tr><th style="width:24%">环节</th><th style="width:22%">实测结果</th><th style="width:16%">耗时</th><th>说明</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>参考文献解析</b></td>
+        <td class="num">259 条 · 序号零断裂</td>
+        <td>0.4 秒</td>
+        <td>同时支持编号式 <code>[1] …[J]</code> 与作者-年份式 <code>Ang, A. (2006). …</code> 两种格式</td>
+      </tr>
+      <tr>
+        <td><b>英文稿题录</b></td>
+        <td class="num">37 条 · 全部可抓</td>
+        <td>—</td>
+        <td>作者-年份格式，此前通用工具基本解析不出来</td>
+      </tr>
+      <tr>
+        <td><b>摘要抓取</b></td>
+        <td class="num">10 / 10</td>
+        <td>115 秒</td>
+        <td>中文走知网登录态，英文走开放 API + 真浏览器过 Cloudflare</td>
+      </tr>
+      <tr>
+        <td><b>初审意见</b></td>
+        <td class="num">9 条问题 · 4,086 字</td>
+        <td>43.7 秒</td>
+        <td>每条含位置、问题、建议、置信度，问题区分「稿件事实」与「模型推断」</td>
+      </tr>
+      <tr>
+        <td><b>第二模型复审</b></td>
+        <td class="num">同意 5 · 漏判 3</td>
+        <td>60 秒</td>
+        <td>独立模型复核初审，明确列出同意、不同意、漏掉的问题</td>
+      </tr>
+      <tr>
+        <td><b>经验沉淀</b></td>
+        <td class="num">按类别累积</td>
+        <td>即时</td>
+        <td>每审一篇追加一条，同类稿件下次可直接调用</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top:20px;font-size:12.5px;color:var(--ink3)">
+    对照：同样一篇稿件，人工完成「抽 10 篇文献 + 查 10 篇摘要 + 逐条比对」通常需要 3–6 小时。
+  </p>
+</section>
+
+<!-- ========== 四、壁垒 ========== -->
+<section>
+  <h2>04 <span>／</span> 技术上真正难的地方</h2>
+  <h3 class="title">难点不在调模型，在数据链路</h3>
+  <p class="lead">市面上「AI 审稿」多数止步于「把稿件丢给大模型问好不好」。真正的门槛在它前面那一段：怎么稳定、准确、可追溯地把文献证据拿到手。</p>
+
+  <div class="moats">
+    <div class="moat">
+      <div class="h"><div class="i">①</div><h4>双格式参考文献解析</h4></div>
+      <p>中文学位论文用 <code>[1] 作者. 题名[J]. 期刊, 年, 卷(期): 页</code>，英文期刊用 <code>Ang, A. (2006). Title. Journal 61: 259-299.</code>。两套规则完全不同，且 PDF 水印会把文字撕碎、标题里的 <code>U.S.</code> 会骗过句点切分。已针对性处理。</p>
+    </div>
+    <div class="moat">
+      <div class="h"><div class="i">②</div><h4>三级摘要抓取链路</h4></div>
+      <p>中文走知网登录态（专业检索 <code>TI='标题'</code> 精确限定篇名）；开放期刊走 CrossRef / OpenAlex；Elsevier 这类带 Cloudflare 人机验证的，走<b>有头真浏览器</b>读页面。三级兜底，实测 10/10。</p>
+    </div>
+    <div class="moat">
+      <div class="h"><div class="i">③</div><h4>宁缺勿错的防抓错机制</h4></div>
+      <p>中文期刊里「前半段同名、后半段不同」的标题极多 —— 实测目标《港口绿色发展效率》被检索成《三甲医院运行效率》。所有来源都过<b>标题相似度 0.80</b> 门槛，低于此一律标「未获取」，绝不把别人的摘要安到这篇上。</p>
+    </div>
+    <div class="moat">
+      <div class="h"><div class="i">④</div><h4>双模型互审</h4></div>
+      <p>初审和复审用<b>两个独立配置</b>的模型，复审模型没接入就直接报错，绝不回落用同一个模型冒充「第二意见」。复审产出同意 / 不同意 / 漏判三类结构化结论。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 五、应用机会 ========== -->
+<section>
+  <h2>05 <span>／</span> 应用机会</h2>
+  <h3 class="title">四个场景，第一个已经在真实使用</h3>
+  <p class="lead">这不是一个需要「先教育市场」的产品。它要替代的动作（抽文献、核题录、比数据）是审稿流程里本来就存在的刚性环节，只是过去由人硬扛。</p>
+
+  <div class="ops">
+    <div class="op hot">
+      <div class="badge">已验证</div>
+      <h4>① 高校学位论文盲审</h4>
+      <div class="row">
+        <div><div class="k">单篇参考文献量</div><div class="v cy">200–300 条</div></div>
+        <div><div class="k">人工核验</div><div class="v">3–6 小时</div></div>
+        <div><div class="k">本产品</div><div class="v cy">约 3 分钟</div></div>
+      </div>
+      <p>盲审专家拿到 200 多页论文，通常只能抽查十几条参考文献。本产品把全部题录解析出来、随机抽 10 篇抓摘要建库，再逐条和稿件的主张对标，专家从「查」转向「判」。</p>
+      <div class="fit">✓ 已在真实博士学位论文上完整跑通四步</div>
+    </div>
+
+    <div class="op">
+      <div class="badge">高匹配</div>
+      <h4>② 期刊编辑部初审</h4>
+      <div class="row">
+        <div><div class="k">编辑部痛点</div><div class="v">格式/引用筛</div></div>
+        <div><div class="k">人工耗时</div><div class="v">1–2 小时/篇</div></div>
+        <div><div class="k">本产品</div><div class="v cy">约 5 分钟</div></div>
+      </div>
+      <p>编辑部初审大量时间花在「引用是否规范、文献是否支撑结论、有没有明显方法缺陷」这类可结构化判断上。工具先出一份带位置的清单，编辑只需复核和决定送不送外审。</p>
+      <div class="fit">✓ 引用自检 + 九维对标功能已具备</div>
+    </div>
+
+    <div class="op">
+      <div class="badge">零门槛</div>
+      <h4>③ 研究生投稿前自检</h4>
+      <div class="row">
+        <div><div class="k">目标</div><div class="v">降低退稿率</div></div>
+        <div><div class="k">使用成本</div><div class="v">一次点击</div></div>
+        <div><div class="k">产出</div><div class="v cy">问题清单</div></div>
+      </div>
+      <p>学生投稿前自己跑一遍，提前发现自己参考文献里「引了但没读」「数据和结论对不上」的问题，比编辑退回再改要省得多。这是最容易规模化的入口。</p>
+      <div class="fit">✓ 单机部署，无需账号体系</div>
+    </div>
+
+    <div class="op">
+      <div class="badge">长期价值</div>
+      <h4>④ 课题组文献资产积累</h4>
+      <div class="row">
+        <div><div class="k">沉淀对象</div><div class="v">审稿经验</div></div>
+        <div><div class="k">组织方式</div><div class="v">按类别归档</div></div>
+        <div><div class="k">复用方式</div><div class="v cy">下一篇直接读</div></div>
+      </div>
+      <p>每审一篇就沉淀一条经验（核心问题 + 可复用判断），按学科类别分目录累积。半年后这就是一份「本领域常见缺陷清单」，新人上手不必再从零悟。</p>
+      <div class="fit">✓ 已实现，当前库内已有真实条目</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 六、落地路径 ========== -->
+<section>
+  <h2>06 <span>／</span> 落地路径</h2>
+  <h3 class="title">从单机工具到团队资产，三步走</h3>
+
+  <div class="road">
+    <div class="phase">
+      <div class="p done">P0 · 已完成</div>
+      <h4>单机可用</h4>
+      <p>四步流程跑通，本地部署，稿件不出本机。一个审稿人一台电脑就能用。</p>
+    </div>
+    <div class="phase">
+      <div class="p next">P1 · 3 个月</div>
+      <h4>团队共享</h4>
+      <p>局域网部署，多人共用一份领域经验库；批量处理队列；期刊名单与官网适配持续扩充。</p>
+    </div>
+    <div class="phase">
+      <div class="p later">P2 · 6–12 个月</div>
+      <h4>平台化</h4>
+      <p>知识库从文件夹换成数据库，加账号与权限；对接编辑部投稿系统；审稿过程留痕可审计。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 七、边界 ========== -->
+<section>
+  <h2>07 <span>／</span> 边界与合规</h2>
+  <h3 class="title">哪些是刻意不做、不能做的</h3>
+  <p class="lead">学术审稿场景里，一条错误结论的代价远高于省下的时间。所以有几条线是硬性的。</p>
+
+  <div class="guards">
+    <div class="guard"><div class="i">◆</div><div><b>不替代人的判断</b><span>所有产出都标注「须审稿人复核」，系统只给证据与线索，不下最终结论。</span></div></div>
+    <div class="guard"><div class="i">◆</div><div><b>稿件不出本机</b><span>本地部署，默认只向模型发送摘要级上下文，全文外发需人工显式开启。</span></div></div>
+    <div class="guard"><div class="i">◆</div><div><b>抓不到就写「未获取」</b><span>绝不编造摘要、DOI、页码。相似度不足 0.80 一律不采用。</span></div></div>
+    <div class="guard"><div class="i">◆</div><div><b>复用登录态而非破解</b><span>中文文献走机构/个人正常登录后的会话，不绕过验证码、不做批量爬取。</span></div></div>
+  </div>
+</section>
+
+<!-- ========== 八、状态 ========== -->
+<section>
+  <h2>08 <span>／</span> 已验证与待验证</h2>
+  <h3 class="title">如实区分「做到了」和「还没做」</h3>
+
+  <div class="cols">
+    <div class="col">
+      <h4><span class="tag ok">已验证</span></h4>
+      <ul>
+        <li>259 条中文参考文献解析，序号零断裂</li>
+        <li>37 条英文作者-年份题录解析</li>
+        <li>中文文献摘要抓取（知网登录态）</li>
+        <li>英文 Elsevier 摘要抓取（真浏览器过验证）</li>
+        <li>初审意见生成，含原文位置锚点</li>
+        <li>第二模型独立复审与结构化结论</li>
+        <li>经验按类别沉淀，可累积</li>
+      </ul>
+    </div>
+    <div class="col dim">
+      <h4><span class="tag warn">待验证</span></h4>
+      <ul>
+        <li>多学科批量并发（目前单篇串行更稳）</li>
+        <li>更多中文期刊官网的检索接口适配</li>
+        <li>编辑部真实工作流中的嵌入方式</li>
+        <li>多人共用知识库时的冲突处理</li>
+        <li>知识库迁移到数据库后的性能</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  学术审稿专家 · 智能工作台　｜　产品方案 v1.0　｜　2026-10
+</footer>
+
+</div>
+</body>
+</html>

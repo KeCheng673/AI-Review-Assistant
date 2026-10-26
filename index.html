@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>学术审稿专家 · 智能体工作台</title>
+<style>
+:root{
+  --bg:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfd; --surface-3:#f1f4f8;
+  --line:#e5e9f0; --line-strong:#d5dbe5;
+  --ink:#131a26; --ink-2:#4c5768; --ink-3:#8d97a6; --ink-4:#b3bac6;
+  --brand:#1f4e8c; --brand-2:#2f6dbd; --brand-soft:#ecf2fa; --brand-line:#c6d8ee;
+  --ok:#0f7b6c; --ok-soft:#e7f4f1; --ok-line:#b8dfd6;
+  --warn:#a9761a; --warn-soft:#fdf4e4; --warn-line:#ecd9ae;
+  --danger:#ad3a32; --danger-soft:#fbeceb; --danger-line:#efc9c6;
+  --violet:#5b4b9b; --violet-soft:#f0edf9;
+  --radius:12px; --radius-sm:8px;
+  --shadow-1:0 1px 2px rgba(19,26,38,.05), 0 1px 3px rgba(19,26,38,.04);
+  --shadow-2:0 4px 16px rgba(19,26,38,.07), 0 1px 3px rgba(19,26,38,.05);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Cascadia Mono","JetBrains Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--font); background:var(--bg); color:var(--ink);
+  font-size:13.5px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cdd4de;border-radius:6px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:#b4bcc9;background-clip:padding-box}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ============ 布局 ============ */
+.app{display:grid;grid-template-columns:252px minmax(0,1fr) 306px;grid-template-rows:54px minmax(0,1fr);height:100vh;min-height:0}
+
+/* ============ 顶栏 ============ */
+.topbar{
+  grid-column:1/-1;display:flex;align-items:center;gap:14px;
+  height:54px;padding:0 18px;background:var(--surface);border-bottom:1px solid var(--line);
+  position:relative;z-index:20;
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-mark{
+  width:30px;height:30px;border-radius:9px;flex:none;
+  background:linear-gradient(145deg,var(--brand) 0%,#3577c4 100%);
+  display:grid;place-items:center;color:#fff;font-size:15px;
+  box-shadow:0 2px 6px rgba(31,78,140,.28);
+}
+.brand-name{font-size:14px;font-weight:650;letter-spacing:.2px;white-space:nowrap}
+.brand-sub{font-size:11px;color:var(--ink-3);white-space:nowrap}
+.topbar-sep{width:1px;height:22px;background:var(--line-strong);flex:none}
+.paper-pill{
+  display:flex;align-items:center;gap:8px;padding:5px 11px;border-radius:999px;
+  background:var(--surface-3);border:1px solid var(--line);min-width:0;max-width:430px;
+}
+.paper-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--warn);flex:none;box-shadow:0 0 0 3px var(--warn-soft)}
+.paper-pill span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;color:var(--ink-2)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.progress-mini{display:flex;align-items:center;gap:9px;margin-right:6px}
+.progress-mini .bar{width:104px;height:5px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress-mini .bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--brand),#3f86d6);transition:width .45s cubic-bezier(.2,.8,.3,1)}
+.progress-mini .txt{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+/* ============ 按钮 ============ */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+  border-radius:var(--radius-sm);border:1px solid var(--line-strong);background:var(--surface);
+  color:var(--ink-2);font-family:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap;
+  transition:.16s ease;
+}
+.btn:hover{background:var(--surface-3);color:var(--ink);border-color:#c3cbd8}
+.btn:active{transform:translateY(.5px)}
+.btn-primary{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 1px 2px rgba(31,78,140,.25)}
+.btn-primary:hover{background:#1a4480;border-color:#1a4480;color:#fff}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+.btn-sm{height:26px;padding:0 9px;font-size:12px}
+.btn-ghost{border-color:transparent;background:transparent}
+.btn-ghost:hover{background:var(--surface-3)}
+
+/* ============ 左栏：流程 ============ */
+.sidebar{
+  background:var(--surface);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;min-height:0;
+}
+.side-head{padding:15px 16px 11px}
+.side-title{font-size:11px;font-weight:650;letter-spacing:.09em;color:var(--ink-3);text-transform:uppercase}
+.side-sub{font-size:11.5px;color:var(--ink-4);margin-top:3px}
+.steps{flex:1;overflow-y:auto;padding:0 10px 14px;min-height:0}
+.step{
+  position:relative;display:flex;gap:10px;padding:9px 10px;border-radius:9px;cursor:pointer;
+  transition:.15s ease;align-items:flex-start;
+}
+.step:hover{background:var(--surface-3)}
+.step.active{background:var(--brand-soft);box-shadow:inset 0 0 0 1px var(--brand-line)}
+.step.active .step-name{color:var(--brand);font-weight:640}
+.step-idx{
+  width:20px;height:20px;border-radius:6px;flex:none;margin-top:1px;
+  display:grid;place-items:center;font-size:11px;font-weight:650;
+  background:var(--surface-3);color:var(--ink-3);border:1px solid var(--line);
+}
+.step.done .step-idx{background:var(--ok-soft);color:var(--ok);border-color:var(--ok-line)}
+.step.active .step-idx{background:var(--brand);color:#fff;border-color:var(--brand)}
+.step-body{min-width:0;flex:1}
+.step-name{font-size:13px;color:var(--ink);line-height:1.35}
+.step-meta{font-size:11px;color:var(--ink-4);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.step.locked{opacity:.5}
+.step.locked .step-name{color:var(--ink-3)}
+.side-foot{padding:10px 14px;border-top:1px solid var(--line);font-size:11px;color:var(--ink-3);display:flex;justify-content:space-between;align-items:center}
+
+/* 左栏 · 模型接口（唯一接入入口） */
+.side-model{border-top:1px solid var(--line);background:var(--surface)}
+.side-model-head{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;user-select:none}
+.side-model-head:hover{background:var(--surface-3)}
+.side-model-head .st{font-size:11px;font-weight:650;letter-spacing:.09em;color:var(--ink-3);text-transform:uppercase}
+.side-model-head .arw{margin-left:auto;font-size:9px;color:var(--ink-4);transition:.18s ease}
+.side-model.open .side-model-head .arw{transform:rotate(180deg)}
+.side-model-body{display:none;padding:2px 14px 13px}
+.side-model.open .side-model-body{display:block}
+.side-model .field{margin-bottom:9px}
+.side-model .field label{font-size:11px;margin-bottom:4px}
+.side-model .input,.side-model .select{height:29px;font-size:12.5px;padding:0 8px}
+.side-model .side-acts{display:flex;gap:7px;margin-top:10px}
+.side-model .hintline{font-size:10.5px;line-height:1.6;color:var(--ink-4);margin-top:9px}
+.side-model .hintline code{font-size:10.5px}
+
+/* ============ 主区 ============ */
+.main{overflow-y:auto;min-height:0;padding:18px 22px 40px}
+.panel{display:none;animation:fade .26s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.page-head{margin-bottom:16px}
+.crumb{font-size:11px;letter-spacing:.06em;color:var(--ink-3);text-transform:uppercase;margin-bottom:5px}
+.page-title{font-size:20px;font-weight:660;letter-spacing:-.2px;display:flex;align-items:center;gap:9px}
+.page-desc{font-size:12.5px;color:var(--ink-2);margin-top:6px;max-width:760px}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow-1);margin-bottom:14px;overflow:hidden;
+}
+.card-head{
+  display:flex;align-items:center;gap:10px;padding:12px 15px;border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,#fff,var(--surface-2));
+}
+.card-head h3{font-size:13px;font-weight:640;letter-spacing:.01em}
+.card-head .hint{font-size:11.5px;color:var(--ink-3)}
+.card-head .right{margin-left:auto;display:flex;gap:7px;align-items:center}
+.card-body{padding:15px}
+.card-body.tight{padding:0;overflow-x:auto}
+table{min-width:0}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+
+/* 表单 */
+.field{margin-bottom:13px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:5px}
+.field label .req{color:var(--danger)}
+.input,.select,textarea.input{
+  width:100%;height:33px;padding:0 10px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);
+  background:var(--surface);font-family:inherit;font-size:13px;color:var(--ink);transition:.16s ease;
+}
+textarea.input{height:auto;padding:8px 10px;resize:vertical;line-height:1.6}
+.input:focus,.select:focus,textarea.input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px var(--brand-soft)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  padding:4px 10px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface);
+  font-size:12px;color:var(--ink-2);cursor:pointer;transition:.15s ease;user-select:none;
+}
+.chip:hover{border-color:var(--brand-line);background:var(--brand-soft)}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.chip.soft{background:var(--surface-3);border-color:var(--line);cursor:default}
+
+/* 上传区 */
+.drop{
+  border:1.5px dashed var(--line-strong);border-radius:var(--radius);padding:26px 20px;text-align:center;
+  background:var(--surface-2);transition:.18s ease;cursor:pointer;
+}
+.drop:hover,.drop.over{border-color:var(--brand-2);background:var(--brand-soft)}
+.drop .ico{font-size:26px;line-height:1;margin-bottom:9px;opacity:.8}
+.drop .t1{font-size:13.5px;font-weight:600}
+.drop .t2{font-size:11.5px;color:var(--ink-3);margin-top:4px}
+.drop .fmts{font-size:11px;color:var(--ink-4);margin-top:8px;letter-spacing:.02em}
+
+/* 文件行 */
+.file-row{
+  display:flex;align-items:center;gap:10px;padding:10px 15px;border-bottom:1px solid var(--line);
+}
+.file-row:last-child{border-bottom:none}
+.file-ico{
+  width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;
+  background:var(--brand-soft);color:var(--brand);font-size:13px;font-weight:700;
+}
+.file-ico.dir{background:var(--warn-soft);color:var(--warn)}
+.file-ico.md{background:var(--violet-soft);color:var(--violet)}
+.file-name{font-size:12.5px;font-family:var(--mono)}
+.file-meta{font-size:11px;color:var(--ink-3);margin-top:1px}
+.file-row .right{margin-left:auto;font-size:11px;color:var(--ink-3)}
+
+/* KPI */
+.kpi{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px 13px;box-shadow:var(--shadow-1);
+}
+.kpi .k{font-size:11px;color:var(--ink-3);margin-bottom:6px}
+.kpi .v{font-size:19px;font-weight:660;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:11.5px;font-weight:500;color:var(--ink-3);margin-left:3px}
+
+/* 标签 */
+.tag{
+  display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;
+  font-size:11px;font-weight:600;letter-spacing:.01em;white-space:nowrap;
+}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}
+.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.tag.danger{background:var(--danger-soft);color:var(--danger)}
+.tag.brand{background:var(--brand-soft);color:var(--brand)}
+.tag.gray{background:var(--surface-3);color:var(--ink-3)}
+.tag.violet{background:var(--violet-soft);color:var(--violet)}
+
+/* 表格 */
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{
+  text-align:left;padding:9px 13px;font-size:11px;font-weight:650;color:var(--ink-3);
+  letter-spacing:.05em;text-transform:uppercase;background:var(--surface-2);
+  border-bottom:1px solid var(--line);white-space:nowrap;
+}
+td{padding:9px 13px;border-bottom:1px solid var(--line);color:var(--ink-2);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--surface-2)}
+td .strong{color:var(--ink);font-weight:600}
+td code{font-family:var(--mono);font-size:11.5px;color:var(--brand);background:var(--brand-soft);padding:1px 5px;border-radius:4px}
+.num{font-variant-numeric:tabular-nums}
+
+/* 代码块 */
+pre.code{
+  background:#131a26;color:#d6dee9;border-radius:var(--radius-sm);padding:12px 14px;
+  font-family:var(--mono);font-size:12px;line-height:1.75;overflow-x:auto;white-space:pre-wrap;word-break:break-word;
+}
+pre.code .kw{color:#7fb2f0}
+pre.code .st{color:#b6dfa3}
+pre.code .cm{color:#7d8798;font-style:italic}
+
+/* 知识卡 */
+.kcard{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:13px;box-shadow:var(--shadow-1);transition:.18s ease;cursor:pointer;
+}
+.kcard:hover{box-shadow:var(--shadow-2);transform:translateY(-1px);border-color:var(--brand-line)}
+.kcard .ttl{font-size:13px;font-weight:640;line-height:1.4;margin-bottom:7px}
+.kcard .doi{font-family:var(--mono);font-size:11px;color:var(--ink-3);word-break:break-all}
+.kcard .kv{display:flex;gap:6px;font-size:11.5px;color:var(--ink-2);margin-top:5px}
+.kcard .kv b{color:var(--ink-3);font-weight:600;flex:none;min-width:42px}
+.kcard .foot{display:flex;gap:6px;margin-top:10px;padding-top:9px;border-top:1px dashed var(--line)}
+
+/* 流程/条 */
+.bar-row{display:flex;align-items:center;gap:9px;margin-bottom:7px;font-size:12px}
+.bar-row .lb{width:74px;color:var(--ink-2);flex:none}
+.bar-row .tr{flex:1;height:7px;border-radius:99px;background:var(--surface-3);overflow:hidden}
+.bar-row .tr i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#4a86d4,#1f4e8c)}
+.bar-row .vv{width:34px;text-align:right;color:var(--ink-3);font-variant-numeric:tabular-nums;font-size:11.5px}
+
+/* 列表 */
+.list{list-style:none}
+.list li{
+  display:flex;gap:9px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:12.5px;color:var(--ink-2);
+}
+.list li:last-child{border-bottom:none}
+.list li .b{color:var(--ink-3);flex:none}
+.list.check li::before{content:"✓";color:var(--ok);font-weight:700;flex:none}
+.list.dot li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--ink-4);flex:none;margin-top:8px}
+
+/* 问题条目 */
+.issue{border:1px solid var(--line);border-left:3px solid var(--danger);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:9px;background:var(--surface)}
+.issue.minor{border-left-color:var(--warn)}
+.issue .ih{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.issue .no{
+  width:19px;height:19px;border-radius:5px;background:var(--danger-soft);color:var(--danger);
+  font-size:11px;font-weight:700;display:grid;place-items:center;flex:none;
+}
+.issue.minor .no{background:var(--warn-soft);color:var(--warn)}
+.issue .it{font-size:12.8px;font-weight:640}
+.issue .ib{font-size:12.5px;color:var(--ink-2)}
+.issue .ib b{color:var(--ink-3);font-weight:600}
+
+/* 时间线 */
+.tl{position:relative;padding-left:18px}
+.tl::before{content:"";position:absolute;left:5px;top:5px;bottom:5px;width:1px;background:var(--line-strong)}
+.tl-item{position:relative;padding:0 0 14px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:"";position:absolute;left:-17px;top:5px;width:9px;height:9px;border-radius:50%;background:#fff;border:2px solid var(--line-strong)}
+.tl-item.done::before{border-color:var(--ok);background:var(--ok)}
+.tl-item.now::before{border-color:var(--brand);background:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.tl-t{font-size:12.5px;font-weight:600}
+.tl-d{font-size:11.5px;color:var(--ink-3);margin-top:2px}
+
+/* 提示条 */
+.note{
+  display:flex;gap:9px;padding:10px 12px;border-radius:var(--radius-sm);font-size:12.5px;line-height:1.6;
+  background:var(--warn-soft);border:1px solid var(--warn-line);color:#7a5310;
+}
+.note.info{background:var(--brand-soft);border-color:var(--brand-line);color:#1b4479}
+.note.ok{background:var(--ok-soft);border-color:var(--ok-line);color:#0b6154}
+.note .ni{flex:none;font-size:13px;line-height:1.5}
+
+/* 分割与工具 */
+.hr{height:1px;background:var(--line);margin:14px 0}
+.row{display:flex;align-items:center;gap:9px}
+.row.between{justify-content:space-between}
+.row.wrap{flex-wrap:wrap}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
+.muted{color:var(--ink-3)}
+.small{font-size:11.5px}
+.mono{font-family:var(--mono)}
+.hide{display:none !important}
+
+/* ============ 右栏 ============ */
+.rail{background:var(--surface);border-left:1px solid var(--line);overflow-y:auto;min-height:0;padding-bottom:24px}
+.rail-sec{padding:13px 15px;border-bottom:1px solid var(--line)}
+.rail-title{font-size:11px;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.rail-title .cnt{margin-left:auto;font-size:10.5px;color:var(--ink-4);letter-spacing:0;text-transform:none}
+.tree{font-size:12px}
+.tree-folder{margin-bottom:8px}
+.tree-folder>.tf-n{
+  display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2);
+  padding:3px 0;cursor:pointer;font-weight:600;
+}
+.tree-folder>.tf-n .arw{color:var(--ink-4);font-size:9px;transition:.18s;display:inline-block}
+.tree-folder.closed>.tf-n .arw{transform:rotate(-90deg)}
+.tree-folder.closed .tf-kids{display:none}
+.tf-kids{padding-left:15px;border-left:1px dashed var(--line-strong);margin-left:3px}
+.tf-f{
+  display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;color:var(--ink-3);
+  padding:2.5px 0;cursor:pointer;border-radius:5px;
+}
+.tf-f:hover{color:var(--brand);background:var(--brand-soft);padding-left:4px}
+.tf-f .fc{flex:none;font-size:10px}
+.tf-f.new{color:var(--ok)}
+.meter{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:11.5px}
+.meter .m-lb{width:62px;color:var(--ink-2);flex:none}
+.meter .m-tr{flex:1;height:6px;border-radius:99px;background:var(--surface-3);overflow:hidden}
+.meter .m-tr i{display:block;height:100%;border-radius:99px;background:var(--ok)}
+.meter .m-v{width:30px;text-align:right;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.rail-note{font-size:11.5px;color:var(--ink-2);line-height:1.65;padding-left:14px;position:relative;margin-bottom:7px}
+.rail-note::before{content:"";position:absolute;left:3px;top:7px;width:5px;height:5px;border-radius:50%;background:var(--brand-line)}
+.rail-note.warn::before{background:var(--warn)}
+.ctx-item{display:flex;gap:8px;font-size:12px;margin-bottom:6px}
+.ctx-item b{color:var(--ink-3);font-weight:600;flex:none;width:56px}
+.ctx-item span{color:var(--ink-2);min-width:0;word-break:break-word}
+/* 提示 */
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translate(-50%,14px);
+  background:#131a26;color:#fff;padding:9px 16px;border-radius:9px;font-size:12.5px;
+  box-shadow:0 10px 28px rgba(19,26,38,.26);opacity:0;pointer-events:none;
+  transition:.24s cubic-bezier(.2,.8,.3,1);z-index:99;max-width:70vw;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:1360px){
+  .app{grid-template-columns:224px minmax(0,1fr) 276px}
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ 顶栏 ============ -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">审</div>
+      <div>
+        <div class="brand-name">学术审稿专家</div>
+        <div class="brand-sub">智能体工作台 · v2.0.0</div>
+      </div>
+    </div>
+    <div class="topbar-sep"></div>
+    <div class="paper-pill">
+      <span class="dot"></span>
+      <span id="topPaper">基于区间分布信息的区间函数型回归模型</span>
+    </div>
+    <div class="topbar-right">
+      <div class="progress-mini">
+        <div class="bar"><i id="progBar"></i></div>
+        <span class="txt" id="progTxt">0 / 4 步</span>
+      </div>
+      <button class="btn btn-ghost" onclick="toast('已保存当前工作区快照（演示）')">保存快照</button>
+      <button class="btn" onclick="toast('审稿意见草稿已导出为 Markdown（演示）')">导出意见</button>
+      <button class="btn btn-primary" onclick="nextStep()">运行下一步</button>
+    </div>
+  </header>
+
+  <!-- ============ 左栏：审稿流程 ============ -->
+  <aside class="sidebar">
+    <div class="side-head">
+      <div class="side-title">审稿流程</div>
+      <div class="side-sub">证据可追溯 · 不编造文献</div>
+    </div>
+    <nav class="steps" id="steps">
+      <div class="step" data-step="0" data-state="now" onclick="go(0)">
+        <div class="step-idx">1</div>
+        <div class="step-body"><div class="step-name">准备稿件</div><div class="step-meta">上传 · 类别 · 审稿口径</div></div>
+      </div>
+      <div class="step" data-step="1" data-state="todo" onclick="go(1)">
+        <div class="step-idx">2</div>
+        <div class="step-body"><div class="step-name">抽参考文献建库</div><div class="step-meta">随机抽样 · 抓摘要 · 本篇知识库</div></div>
+      </div>
+      <div class="step" data-step="2" data-state="todo" onclick="go(2)">
+        <div class="step-idx">3</div>
+        <div class="step-body"><div class="step-name">读库出意见</div><div class="step-meta">模型先读知识库再判断</div></div>
+      </div>
+      <div class="step" data-step="3" data-state="todo" onclick="go(3)">
+        <div class="step-idx">4</div>
+        <div class="step-body"><div class="step-name">沉淀经验</div><div class="step-meta">按类别写入总知识库</div></div>
+      </div>
+    </nav>
+
+    <!-- 模型接口：整个工作台唯一的模型接入入口，接入后各步骤自动调用 -->
+    <div class="side-model" id="sideModel">
+      <div class="side-model-head" onclick="llmSideToggle()" title="接入你自己的大模型 API（OpenAI 兼容）">
+        <span class="st">模型接口</span>
+        <span class="tag gray" id="lmTag">未探测</span>
+        <span class="arw">▲</span>
+      </div>
+      <div class="side-model-body">
+        <div class="hintline" style="margin-top:0">只在这里接入一次你自己的大模型 API（OpenAI 兼容，可指向 DeepSeek / 通义 / 智谱 / Kimi / 本机 Ollama）。接入后 Step 4 / 6 / 7 / 9 自动调用，步骤内不再重复配置；密钥只写入本机 <code>config.json</code>，不进任何产物。</div>
+        <div class="field" style="margin-top:10px"><label>服务地址 Base URL（必带 /v1）</label>
+          <input class="input" id="lmBase" placeholder="https://api.deepseek.com/v1" /></div>
+        <div class="field"><label>API Key <span id="lmKeyState" style="font-weight:400;color:var(--ink-4)"></span></label>
+          <input class="input" id="lmKey" type="password" placeholder="sk-… 或 ollama" autocomplete="off" /></div>
+        <div class="field"><label>模型名</label>
+          <input class="input" id="lmModel" placeholder="deepseek-chat / qwen-plus / qwen2.5:14b" /></div>
+        <div class="field"><label>发送范围（保密）</label>
+          <select class="select" id="lmPriv">
+            <option value="abstract_only">仅摘要 + 关键章节首段（推荐）</option>
+            <option value="abstract_only_trim">仅摘要</option>
+            <option value="fulltext">全文（不建议，稿件将离开本机）</option>
+          </select></div>
+        <div class="side-acts">
+          <button class="btn btn-primary btn-sm" onclick="llmSideSave()">保存并测试连接</button>
+          <button class="btn btn-sm" onclick="llmSideReset()">清除</button>
+        </div>
+        <div id="lmOut"></div>
+        <div class="hintline" id="lmHint"></div>
+
+        <div style="border-top:1px dashed var(--line);margin:13px 0 10px"></div>
+        <div class="row" style="gap:7px;align-items:center;margin-bottom:8px">
+          <span style="font-size:11px;font-weight:650;letter-spacing:.06em;color:var(--ink-3)">复审模型（第二意见）</span>
+          <span class="tag gray" id="lm2Tag" style="font-size:10px">未配置</span>
+        </div>
+        <div class="hintline" style="margin:0 0 9px">第二个模型只做复审：读初审意见 + 稿件 + 文献知识库，判断初审是否成立、有无漏判，产出复审意见与总结。留空则不启用。</div>
+        <div class="field"><label>服务地址 Base URL</label>
+          <input class="input" id="lm2Base" placeholder="https://api.deepseek.com/v1 或校内 GPUStack" /></div>
+        <div class="field"><label>API Key</label>
+          <input class="input" id="lm2Key" type="password" placeholder="sk-…" autocomplete="off" /></div>
+        <div class="field"><label>模型名</label>
+          <input class="input" id="lm2Model" placeholder="deepseek-v4-pro / qwen3.5-27b" /></div>
+        <div class="side-acts">
+          <button class="btn btn-primary btn-sm" onclick="llm2Save()">保存并测试</button>
+          <button class="btn btn-sm" onclick="llm2Load()">重新读取</button>
+        </div>
+        <div id="lm2Out"></div>
+      </div>
+    </div>
+
+    <div class="side-foot">
+      <span>保密模式</span>
+      <span class="tag ok">已开启</span>
+    </div>
+  </aside>
+
+  <!-- ============ 主区 ============ -->
+  <main class="main" id="main">
+<!-- ===== Step 1 · 准备 ===== -->
+    <section class="panel active" data-panel="0">
+      <div class="page-head">
+        <div class="crumb">Step 1 / 4 · 准备</div>
+        <h2 class="page-title">准备稿件与审稿口径</h2>
+        <p class="page-desc">上传稿件并确定文章类别。类别决定本篇知识库与总知识库的归档位置。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <h3>待审稿件</h3>
+            <span class="hint">本地副本，按保密材料处理</span>
+            <div class="right"><span class="tag gray" id="s1FileTag">待上传</span></div>
+          </div>
+          <div class="card-body">
+            <div class="drop" id="drop">
+              <div class="ico">📄</div>
+              <div class="t1">拖入稿件，或点击选择文件</div>
+              <div class="t2">抽参考文献需要 PDF / DOCX 原件</div>
+              <div class="fmts">DOCX · PDF · MD · TXT</div>
+            </div>
+            <div id="s1FileRow" style="margin-top:12px"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>审稿口径</h3><span class="hint">Step 1 必填</span></div>
+          <div class="card-body">
+            <div class="field">
+              <label>文章类别 <span class="req">*</span></label>
+              <input class="input" id="fDomain" list="domainList" placeholder="如：统计学 · 函数型数据" />
+              <datalist id="domainList">
+                <option value="管理学 · 公司治理"></option>
+                <option value="管理学 · 公司金融"></option>
+                <option value="管理学 · 会计学"></option>
+                <option value="管理学 · 审计"></option>
+                <option value="管理学 · 财务管理"></option>
+                <option value="管理学 · 战略管理"></option>
+                <option value="管理学 · 组织行为与人力资源"></option>
+                <option value="管理学 · 市场营销"></option>
+                <option value="管理学 · 运营管理"></option>
+                <option value="管理学 · 供应链与物流"></option>
+                <option value="管理学 · 创新与创业"></option>
+                <option value="管理学 · 信息管理"></option>
+                <option value="管理学 · 公共管理"></option>
+                <option value="管理学 · 项目管理"></option>
+                <option value="经济学 · 资产定价"></option>
+                <option value="经济学 · 公司金融"></option>
+                <option value="经济学 · 宏观经济学"></option>
+                <option value="经济学 · 微观经济学"></option>
+                <option value="经济学 · 计量经济学"></option>
+                <option value="经济学 · 金融学"></option>
+                <option value="经济学 · 货币银行"></option>
+                <option value="经济学 · 国际贸易"></option>
+                <option value="经济学 · 产业经济学"></option>
+                <option value="经济学 · 劳动经济学"></option>
+                <option value="经济学 · 区域经济学"></option>
+                <option value="经济学 · 环境与资源经济学"></option>
+                <option value="经济学 · 能源经济"></option>
+                <option value="经济学 · 数字经济"></option>
+                <option value="经济学 · 行为经济学"></option>
+                <option value="统计学 · 数理统计"></option>
+                <option value="统计学 · 函数型数据"></option>
+                <option value="统计学 · 时间序列"></option>
+                <option value="统计学 · 贝叶斯统计"></option>
+                <option value="统计学 · 高维与变量选择"></option>
+                <option value="统计学 · 金融统计与风险管理"></option>
+                <option value="统计学 · 生物统计"></option>
+                <option value="统计学 · 空间统计"></option>
+                <option value="统计学 · 因果推断"></option>
+                <option value="统计学 · 抽样调查"></option>
+                <option value="计算机科学 · 机器学习"></option>
+                <option value="计算机科学 · 深度学习"></option>
+                <option value="计算机科学 · 自然语言处理"></option>
+                <option value="计算机科学 · 计算机视觉"></option>
+                <option value="计算机科学 · 数据挖掘"></option>
+                <option value="计算机科学 · 推荐系统"></option>
+                <option value="计算机科学 · 信息安全"></option>
+                <option value="计算机科学 · 软件工程"></option>
+                <option value="计算机科学 · 分布式与云计算"></option>
+                <option value="计算机科学 · 图神经网络"></option>
+                <option value="数学 · 概率论"></option>
+                <option value="数学 · 优化理论"></option>
+                <option value="数学 · 数值计算"></option>
+                <option value="数学 · 随机分析"></option>
+                <option value="交通运输工程 · 航运物流"></option>
+                <option value="交通运输工程 · 供应链管理"></option>
+                <option value="交通运输工程 · 交通规划"></option>
+                <option value="能源科学 · 风险管理"></option>
+                <option value="能源科学 · 电力系统"></option>
+                <option value="能源科学 · 新能源"></option>
+                <option value="环境科学 · 气候变化"></option>
+                <option value="环境科学 · 绿色转型"></option>
+                <option value="环境科学 · 碳排放"></option>
+                <option value="材料科学 · 新能源材料"></option>
+                <option value="机械工程 · 智能制造"></option>
+                <option value="土木工程 · 结构工程"></option>
+                <option value="医学 · 临床研究"></option>
+                <option value="医学 · 公共卫生与流行病学"></option>
+                <option value="医学 · 医学影像"></option>
+                <option value="生物学 · 基因组学"></option>
+                <option value="药学 · 药物研发"></option>
+                <option value="心理学 · 认知心理学"></option>
+                <option value="社会学 · 社会网络"></option>
+                <option value="教育学 · 教育测量与评价"></option>
+                <option value="法学 · 经济法"></option>
+                <option value="新闻传播学 · 媒介研究"></option>
+                <option value="政治学 · 公共政策"></option>
+                <option value="农学 · 农业经济"></option>
+                <option value="地球科学 · 遥感与地理信息"></option>
+                <option value="地理学 · 城市研究"></option>
+                <option value="未分类"></option>
+              </datalist>
+              <div class="hint" style="margin-top:6px">总知识库按此类别分目录归档，同一类别会持续积累。</div>
+            </div>
+
+            <div class="field">
+              <label>评审场景</label>
+              <select class="select" id="fScene">
+                <option>期刊复审</option>
+                <option>期刊首审</option>
+                <option>会议投稿</option>
+                <option>学位论文评议</option>
+                <option>基金申请书评审</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>输出语言</label>
+              <div class="chips" id="fLang">
+                <div class="chip on" data-val="中文">中文</div>
+                <div class="chip" data-val="English">English</div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>审稿重点（可多选）</label>
+              <div class="chips" id="fFocus">
+                <div class="chip on" data-val="创新性">创新性</div>
+                <div class="chip on" data-val="方法学">方法学</div>
+                <div class="chip on" data-val="统计">统计</div>
+                <div class="chip" data-val="伦理">伦理</div>
+                <div class="chip" data-val="写作与引用">写作与引用</div>
+                <div class="chip" data-val="可复现性">可复现性</div>
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:16px;gap:9px">
+              <button class="btn btn-primary" onclick="saveStep1()">保存并进入 Step 2 →</button>
+              <span class="muted small" id="s1Msg" style="align-self:center"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Step 2 · 抽参考文献建库 ===== -->
+    <section class="panel" data-panel="1">
+      <div class="page-head">
+        <div class="crumb">Step 2 / 4 · 文献</div>
+        <h2 class="page-title">抽参考文献 · 建本篇知识库</h2>
+        <p class="page-desc">从作者自己的参考文献里随机抽 N 篇，抓取摘要，构成本篇审稿的专属知识库。</p>
+      </div>
+
+      <div class="note info" id="s2Source" style="margin-bottom:14px">
+        <span class="ni">i</span><div>来源稿件：<b id="s2SourceName">读取中…</b>　｜　类别：<span id="s2SourceDomain">—</span></div>
+      </div>
+
+      <div class="grid-4" style="margin-bottom:14px">
+        <div class="card"><div class="card-body">
+          <div class="muted small">参考文献总数</div>
+          <div style="font-size:26px;font-weight:600" id="s2Total">—</div>
+        </div></div>
+        <div class="card"><div class="card-body">
+          <div class="muted small">可抓摘要（期刊/会议）</div>
+          <div style="font-size:26px;font-weight:600" id="s2Abstractable">—</div>
+        </div></div>
+        <div class="card"><div class="card-body">
+          <div class="muted small">中文 / 英文</div>
+          <div style="font-size:26px;font-weight:600" id="s2Lang">—</div>
+        </div></div>
+        <div class="card"><div class="card-body">
+          <div class="muted small">已入本篇知识库</div>
+          <div style="font-size:26px;font-weight:600" id="s2InKb">—</div>
+        </div></div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head"><h3>① 抽取与抽样</h3><span class="hint">从稿件参考文献章节解析题录</span></div>
+        <div class="card-body">
+          <div class="row wrap" style="gap:14px;align-items:flex-end">
+            <div class="field" style="margin:0">
+              <label>随机抽取篇数</label>
+              <input class="input" id="s2N" type="number" min="1" max="100" value="10" style="width:110px" />
+            </div>
+            <div class="field" style="margin:0">
+              <label>随机种子（可留空）</label>
+              <input class="input" id="s2Seed" type="text" placeholder="固定后结果可复现" style="width:170px" />
+            </div>
+            <button class="btn btn-primary" onclick="s2Extract()">抽取参考文献</button>
+            <span class="muted small" id="s2Msg" style="align-self:center"></span>
+          </div>
+          <div id="s2Picked" style="margin-top:14px"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head"><h3>② 抓取摘要</h3><span class="hint">抓不到的标记「未获取」，按你的要求跳过不补</span></div>
+        <div class="card-body">
+          <div class="note info" id="s2Cnki" style="margin-bottom:12px">
+            <span class="ni">i</span><div>知网登录态：<b id="s2CnkiTxt">检查中…</b>
+            <span style="margin-left:10px;display:inline-flex;gap:6px">
+              <button class="btn btn-sm" onclick="s2CnkiLogin()">重新登录知网</button>
+              <button class="btn btn-sm" onclick="s2CnkiCheck()">检查状态</button>
+            </span>
+            <div class="muted small" style="margin-top:6px">
+              中文文献走知网登录态抓取，英文走 CrossRef / OpenAlex / DOI 直连。<br/>
+              登录态断了就点「重新登录知网」—— 会弹出浏览器窗口，在里面扫码或机构登录，完成后点「检查状态」。窗口别关掉。
+            </div></div>
+          </div>
+          <div class="row wrap" style="gap:14px;align-items:center">
+            <button class="btn btn-primary" onclick="s2Fetch()">开始抓取摘要</button>
+            <button class="btn" onclick="s2Progress()">刷新进度</button>
+            <span class="muted small" id="s2FetchMsg" style="align-self:center"></span>
+          </div>
+          <div class="muted small" style="margin-top:9px">
+            自动按语种分流：<b>中文</b>走知网登录态（专业检索精确匹配篇名）；<b>英文</b>依次尝试 CrossRef → OpenAlex → 真浏览器过 Cloudflare。
+            抓不到的直接标「未获取」，不补齐、不编造。
+          </div>
+          <div id="s2FetchBar" style="margin-top:14px"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>③ 本篇知识库</h3><span class="hint">后续 Step 3 模型先读这份内容</span>
+          <div class="right"><button class="btn btn-sm" onclick="s2BuildKb()">重新生成</button></div>
+        </div>
+        <div class="card-body">
+          <div id="s2KbStat" class="muted small" style="margin-bottom:10px">尚未生成</div>
+          <pre class="pre" id="s2KbMd" style="max-height:420px;overflow:auto"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Step 3 · 读库出意见 ===== -->
+    <section class="panel" data-panel="2">
+      <div class="page-head">
+        <div class="crumb">Step 3 / 4 · 审稿</div>
+        <h2 class="page-title">读知识库 · 出审稿意见</h2>
+        <p class="page-desc">模型先读完本篇知识库的文献摘要，再结合稿件给出审稿意见。</p>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head"><h3>知识库就绪状态</h3>
+          <div class="right"><span class="tag" id="s3KbTag">未就绪</span></div>
+        </div>
+        <div class="card-body">
+          <div id="s3KbStat" class="muted small">尚未建立本篇知识库，请先完成 Step 2。</div>
+          <div class="row" style="margin-top:14px;gap:9px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="s3Draft()">生成审稿意见</button>
+            <button class="btn" onclick="s3OpenKb()">查看知识库全文</button>
+            <span class="muted small" id="s3Msg" style="align-self:center"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>审稿意见</h3><span class="hint">模型产出，须经你复核</span>
+          <div class="right"><button class="btn btn-sm" onclick="s3Save()">保存到工作区</button></div>
+        </div>
+        <div class="card-body">
+          <div id="s3Out" class="muted small">尚未生成。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Step 4 · 复审与沉淀 ===== -->
+    <section class="panel" data-panel="3">
+      <div class="page-head">
+        <div class="crumb">Step 4 / 4 · 复审与沉淀</div>
+        <h2 class="page-title">第二模型复审 · 沉淀总结</h2>
+        <p class="page-desc">第二个模型先审第一个模型的意见，判断是否成立、有无漏判；把它的总结沉淀进总知识库。</p>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head"><h3>① 提请复审</h3>
+          <span class="hint">复审模型读初审意见 + 稿件 + 文献知识库</span>
+          <div class="right"><span class="tag gray" id="s4Llm2Tag">未配置</span></div>
+        </div>
+        <div class="card-body">
+          <div class="row wrap" style="gap:9px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="s4Second()">第二模型复审</button>
+            <button class="btn" onclick="s4OpenSecond()">查看复审全文</button>
+            <span class="muted small" id="s4SecondMsg" style="align-self:center"></span>
+          </div>
+          <div id="s4SecondOut" class="muted small" style="margin-top:12px">尚未复审。</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><h3>总知识库现状</h3><span class="hint">按类别分目录</span>
+            <div class="right"><button class="btn btn-sm" onclick="s4RefreshLib()">刷新</button></div>
+          </div>
+          <div class="card-body">
+            <div id="s4LibNow" class="muted small">读取中…</div>
+            <div class="note info" style="margin-top:12px"><span class="ni">i</span><div>
+              当前用文件夹组织：<code>_library/&lt;类别&gt;/experience.md</code>。
+              只存审稿经验总结，不存文献卡片（文献摘要留在各稿件的 <code>02_abstracts/</code>）。
+            </div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>② 沉淀总结</h3><span class="hint">复审总结可改，改完再写入</span></div>
+          <div class="card-body">
+            <div class="field">
+              <label>复审结论</label>
+              <input class="input" id="s4Verdict" placeholder="复审后自动填入" />
+            </div>
+            <div class="field">
+              <label>沉淀总结（写入总知识库）</label>
+              <textarea class="input" id="s4Summary" rows="6" placeholder="复审后自动填入，可编辑。建议写：这篇的核心问题 + 可复用的判断经验"></textarea>
+            </div>
+            <div class="row" style="margin-top:12px;gap:9px">
+              <button class="btn btn-primary" onclick="s4Archive()">写入总知识库</button>
+              <span class="muted small" id="s4Msg" style="align-self:center"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ 右栏：产物与合规 ============ -->
+  <aside class="rail">
+    <div class="rail-sec">
+      <div class="rail-title">审稿工作区 <span class="cnt">review-workspace/</span></div>
+      <div class="tree" id="tree">
+        <div class="tree-folder">
+          <div class="tf-n" onclick="toggleFolder(this)"><span class="arw">▼</span>paper-2026-1015</div>
+          <div class="tf-kids">
+            <div class="tf-f" onclick="toast('打开 00_manuscript/')"><span class="fc">📁</span>00_manuscript</div>
+            <div class="tf-f" onclick="toast('打开 manuscript.docx')"><span class="fc">📄</span>manuscript.docx</div>
+            <div class="tf-f" onclick="toast('打开 01_parse/')"><span class="fc">📁</span>01_parse</div>
+            <div class="tf-f" onclick="toast('打开 manuscript_parse.json')"><span class="fc">🧾</span>manuscript_parse.json</div>
+            <div class="tf-f" onclick="toast('打开 02_search/')"><span class="fc">📁</span>02_search</div>
+            <div class="tf-f" onclick="toast('打开 search-strategy.md')"><span class="fc">📝</span>search-strategy.md</div>
+            <div class="tf-f new" onclick="toast('打开 results.md')"><span class="fc">📝</span>results.md</div>
+            <div class="tf-f" onclick="toast('打开 03_cards/')"><span class="fc">📁</span>03_cards</div>
+            <div class="tf-f new" onclick="toast('打开 liu2019.md 等 3 张知识卡')"><span class="fc">🗂️</span>3 张知识卡</div>
+            <div class="tf-f" onclick="toast('打开 04_knowledge_base/')"><span class="fc">📁</span>04_knowledge_base</div>
+            <div class="tf-f" onclick="toast('打开 domain-kb.md')"><span class="fc">📚</span>domain-kb.md</div>
+            <div class="tf-f" onclick="toast('打开 05_review/')"><span class="fc">📁</span>05_review</div>
+            <div class="tf-f" onclick="toast('打开 review-report.md')"><span class="fc">📝</span>review-report.md</div>
+            <div class="tf-f new" onclick="toast('打开 citation-check.md')"><span class="fc">✅</span>citation-check.md</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rail-sec">
+      <div class="rail-title">审稿上下文</div>
+      <div class="ctx-item"><b>领域</b><span id="railDomain">统计学 · 函数型数据</span></div>
+      <div class="ctx-item"><b>场景</b><span id="railScene">期刊复审</span></div>
+      <div class="ctx-item"><b>语言</b><span id="railLang">中文</span></div>
+      <div class="ctx-item"><b>重点</b><span id="railFocus">创新性 · 方法学 · 统计</span></div>
+    </div>
+
+    <div class="rail-sec">
+      <div class="rail-title">本篇进度</div>
+      <div class="meter"><span class="m-lb">参考文献</span><span class="m-tr"><i id="mRefBar" style="width:0%"></i></span><span class="m-v" id="mRefVal">—</span></div>
+      <div class="meter"><span class="m-lb">已获摘要</span><span class="m-tr"><i id="mAbsBar" style="width:0%"></i></span><span class="m-v" id="mAbsVal">—</span></div>
+      <div class="rail-note" style="margin-top:8px">数字取自本篇工作区实际产物，不做估算。</div>
+    </div>
+
+    <div class="rail-sec">
+      <div class="rail-title">合规红线</div>
+      <div class="rail-note warn">未发表稿件不得全文上传公共检索，仅用关键词 / 摘要。</div>
+      <div class="rail-note warn">DOI、作者、年份未双源核验一律标注「未验证」。</div>
+      <div class="rail-note">引用计数须标注来源与查询日期（多源分歧如实并列）。</div>
+      <div class="rail-note">只给审稿建议，不替代编辑决定。</div>
+    </div>
+
+    <div class="rail-sec" style="border-bottom:none">
+      <div class="rail-title">可用工具链</div>
+      <div class="row wrap">
+        <span class="tag brand">browser-act（主）</span>
+        <span class="tag gray">CrossRef</span>
+        <span class="tag gray">OpenAlex</span>
+      </div>
+      <div class="rail-note" style="margin-top:9px">文献摘要统一走本机 browser-act；两个 API 仅作补充，命中后仍做标题相似度校验。</div>
+    </div>
+  </aside>
+
+</div>
+
+<div id="toast" class="toast"></div>
+<script>
+(function(){
+  const panels = Array.prototype.slice.call(document.querySelectorAll('.panel'));
+  const steps  = Array.prototype.slice.call(document.querySelectorAll('.step'));
+  const main   = document.getElementById('main');
+  let cur = 0;
+
+  const LABEL = {done:'已完成', now:'进行中', todo:'待运行'};
+
+  function render(){
+    steps.forEach(function(s,i){
+      const st = s.dataset.state || 'todo';
+      s.classList.toggle('active', i === cur);
+      s.classList.toggle('done', st === 'done');
+      s.classList.toggle('locked', st === 'locked');
+    });
+    panels.forEach(function(p,i){ p.classList.toggle('active', i === cur); });
+
+    const done = steps.filter(function(s){ return s.dataset.state === 'done'; }).length;
+    document.getElementById('progBar').style.width = (done / steps.length * 100) + '%';
+    document.getElementById('progTxt').textContent = done + ' / ' + steps.length + ' 步';
+    if(main) main.scrollTop = 0;
+  }
+
+  window.go = function(n){
+    n = Math.max(0, Math.min(steps.length - 1, n));
+    if(n > cur){ for(let i = cur; i < n; i++) steps[i].dataset.state = 'done'; }
+    if(steps[n].dataset.state !== 'done') steps[n].dataset.state = 'now';
+    if(steps[n + 1] && steps[n + 1].dataset.state === 'locked') steps[n + 1].dataset.state = 'todo';
+    cur = n;
+    render();
+    try{ history.replaceState(null, '', '#step=' + n); }catch(e){}
+  };
+
+  window.nextStep = function(){ go(cur + 1); };
+
+  window.confirmSearch = function(){
+    toast('检索计划已确认，正在调用 OpenAlex / Crossref / 智慧芽 MCP…');
+    go(3);
+  };
+
+  window.finish = function(){
+    steps.forEach(function(s){ s.dataset.state = 'done'; });
+    render();
+    toast('本轮审稿资产已写入知识库（演示）');
+  };
+
+  steps.forEach(function(s, i){
+    s.addEventListener('click', function(){ go(i); });
+  });
+
+  /* 选择器 */
+  const SINGLE = { fLang:1, decideChips:1 };
+  Array.prototype.slice.call(document.querySelectorAll('.chips')).forEach(function(box){
+    box.addEventListener('click', function(e){
+      const c = e.target.closest('.chip');
+      if(!c || c.classList.contains('soft')) return;
+      if(SINGLE[box.id]){
+        Array.prototype.slice.call(box.querySelectorAll('.chip')).forEach(function(x){ x.classList.remove('on'); });
+        c.classList.add('on');
+      } else {
+        c.classList.toggle('on');
+      }
+      syncSummary();
+    });
+  });
+
+  function picked(boxId){
+    const box = document.getElementById(boxId);
+    if(!box) return [];
+    return Array.prototype.slice.call(box.querySelectorAll('.chip.on')).map(function(c){ return c.dataset.val; });
+  }
+
+  function syncSummary(){
+    const lang = picked('fLang')[0] || '中文';
+    const focus = picked('fFocus');
+    const elL = document.getElementById('sumLang');
+    if(elL) elL.textContent = lang;
+    const rL = document.getElementById('railLang');
+    if(rL) rL.textContent = lang;
+    const txt = focus.length ? focus.join(' · ') : '未指定';
+    const elF = document.getElementById('sumFocus');
+    if(elF) elF.textContent = txt;
+    const rF = document.getElementById('railFocus');
+    if(rF) rF.textContent = txt;
+    const dSel = document.getElementById('fDomain');
+    const rD = document.getElementById('railDomain');
+    if(dSel && rD) rD.textContent = dSel.value;
+    const sSel = document.getElementById('fScene');
+    const rS = document.getElementById('railScene');
+    if(sSel && rS) rS.textContent = sSel.value;
+  }
+
+  ['fDomain','fScene'].forEach(function(id){
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('change', syncSummary);
+  });
+
+  /* 上传区 */
+  const drop = document.getElementById('drop');
+  if(drop){
+    ['dragenter','dragover'].forEach(function(ev){
+      drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('over'); });
+    });
+    ['dragleave','drop'].forEach(function(ev){
+      drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('over'); });
+    });
+    drop.addEventListener('drop', function(e){
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      toast(f ? ('已接收 ' + f.name + '，等待解析（演示）') : '未识别到文件（演示）');
+    });
+  }
+
+  /* 目录树折叠 */
+  window.toggleFolder = function(el){
+    el.parentElement.classList.toggle('closed');
+    const arw = el.querySelector('.arw');
+    if(arw) arw.textContent = el.parentElement.classList.contains('closed') ? '▶' : '▼';
+  };
+
+  /* Toast */
+  let toastTimer = null;
+  window.toast = function(msg){
+    const t = document.getElementById('toast');
+    if(!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2100);
+  };
+
+  /* 模型接口（左栏）· 演示模式兜底；连接本地服务后由 real-mode.js 接管同名函数 */
+  window.llmSideToggle = function(){
+    const el = document.getElementById('sideModel');
+    if(el) el.classList.toggle('open');
+  };
+  window.llmSideSave = function(){ toast('演示模式未连接服务：运行 python server.py 后从 http://127.0.0.1:8770 打开，即可在此接入自己的模型 API'); };
+  window.llmSideReset = function(){ toast('演示模式下没有模型配置'); };
+  if(location.protocol === 'file:'){
+    const t = document.getElementById('lmTag');
+    if(t){ t.className = 'tag gray'; t.textContent = '演示模式'; }
+    const k = document.getElementById('lmKeyState');
+    if(k) k.textContent = '（演示模式不可保存）';
+  }
+
+  render();
+  syncSummary();
+
+  /* 支持 #step=N 直接定位（便于分享某一步） */
+  (function initFromHash(){
+    const m = /step=(\d+)/.exec(location.hash || '');
+    if(!m) return;
+    const n = Math.max(0, Math.min(steps.length - 1, parseInt(m[1], 10)));
+    if(n === 0) return;
+    for(let i = 0; i < n; i++){ if(steps[i].dataset.state !== 'done') steps[i].dataset.state = 'done'; }
+    if(steps[n].dataset.state === 'todo') steps[n].dataset.state = 'now';
+    cur = n;
+    render();
+  })();
+})();
+</script>
+</body>
+</html>

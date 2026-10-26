@@ -1,0 +1,20 @@
+{
+  "_说明": "复制此文件为 config.json，然后填入你自己的 API Key。config.json 已被 .gitignore 排除，不会上传到 GitHub。",
+  "_获取Key": "https://platform.deepseek.com/api_keys —— 注册后创建，格式 sk-xxxxxxxx",
+
+  "llm": {
+    "provider": "openai",
+    "base_url": "https://api.deepseek.com/v1",
+    "model": "deepseek-flash",
+    "api_key": "sk-在这里填你的 DeepSeek API Key",
+    "privacy_mode": "fulltext"
+  },
+
+  "llm2": {
+    "_说明": "第二个模型（可选）。用于「读库出意见」这一步，通常配更强的模型。留空则回退到 llm 的配置。",
+    "provider": "openai",
+    "base_url": "https://api.deepseek.com/v1",
+    "model": "deepseek-v4-pro",
+    "api_key": "sk-可留空"
+  }
+}

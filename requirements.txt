@@ -1,0 +1,8 @@
+# 唯一必要的第三方包：解析 PDF 稿件与参考文献（import fitz）
+PyMuPDF>=1.23.0
+
+# 其余全部是 Python 标准库，无需安装。
+#
+# 可选依赖（不装也能跑，只是英文摘要抓取率下降）：
+#   browser-act  —— 外部 CLI，不是 pip 包。装法见 README「快速开始」。
+#                   没有它时 fetcher.py 会退回 CrossRef / OpenAlex 两条开放 API 链路。

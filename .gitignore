@@ -1,0 +1,39 @@
+# 密钥与本机配置：绝不入库
+config.json
+config.local.json
+*.key
+.env
+.env.*
+
+# 本地审稿工作区（含未发表稿件，默认不入库；如需归档请自行放开）
+review-workspace/
+
+# 清理前的测试数据归档包
+_archive/
+
+# 运行产物
+server.log
+*.log
+llm-last-test.json
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# 编辑器 / 工具缓存
+.wpscomate/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 空目录占位（git 不追踪空目录，demo 里没有实际内容）
+demo/
+
+# 下载/导出物
+*.docx
+*.pdf
+!demo/**/*.pdf
